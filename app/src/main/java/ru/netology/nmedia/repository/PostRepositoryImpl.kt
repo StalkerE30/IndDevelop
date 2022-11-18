@@ -36,7 +36,7 @@ class PostRepositoryImpl: PostRepository {
             }
     }
 
-    override fun likeById(id: Long, likeUnLike:Boolean) {
+    override fun likeById(id: Long, likeUnLike:Boolean):Post {
         // TODO: do this in homework
         val request: Request = if (likeUnLike) {
             Request.Builder()
@@ -49,11 +49,17 @@ class PostRepositoryImpl: PostRepository {
                     .url("${BASE_URL}/api/slow/posts/$id/likes")
                     .build()
             }
-        client.newCall(request)
+        return client.newCall(request)
             .execute()
-            .close()
+            .let { it.body?.string() ?: throw RuntimeException("body is null") }
+            .let {
+                gson.fromJson(it, Post::class.java)
+            }
+//        client.newCall(request)
+//            .execute()
+//            .close()
 
-        getAll()
+
 
     }
 
