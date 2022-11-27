@@ -13,6 +13,7 @@ private val empty = Post(
     id = 0,
     content = "",
     author = "",
+    authorAvatar = "",
     likedByMe = false,
     likes = 0,
     published = ""
@@ -34,26 +35,28 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadPosts() {
-        thread {
-            // Начинаем загрузку
-            _data.postValue(FeedModel(loading = true))
-            try {
-                // Данные успешно получены
-                val posts = repository.getAll()
-                FeedModel(posts = posts, empty = posts.isEmpty())
-            } catch (e: IOException) {
-                // Получена ошибка
-                FeedModel(error = true)
-            }.also(_data::postValue)
-        }
+        _data.postValue(FeedModel(loading = true))
+        repository.getAll(object : PostRepository.Callback<List<Post>>{
+            override fun onSuccess(value: List<Post>) {
+                _data.postValue(FeedModel(posts = value, empty = value.isEmpty()))
+            }
+
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
     }
 
     fun save() {
         edited.value?.let {
-            thread {
-                repository.save(it)
-                _postCreated.postValue(Unit)
-            }
+            repository.save(it, object : PostRepository.Callback<Post>{
+                override fun onSuccess(value: Post){
+                    _postCreated.postValue(Unit)
+                }
+                override fun onError(e: Exception) {
+
+                }
+            })
         }
         edited.value = empty
     }
@@ -71,26 +74,33 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun likeById(id: Long,likeUnlike:Boolean) {
-        thread { val likedPost = repository.likeById(id,likeUnlike)
-                _data.value?.posts.orEmpty().map { if (it.id == id) likedPost else it }
-        }
+         repository.likeById(id, likeUnlike, object : PostRepository.Callback<Post> {
+            override fun onSuccess(likedPost: Post) {
+                //val likedPost = value
+                _data.postValue(
+                    FeedModel(posts = _data.value?.posts.orEmpty().map { if (it.id == id) likedPost else it }))
+            }
 
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
     }
 
     fun removeById(id: Long) {
-        thread {
-            // Оптимистичная модель
-            val old = _data.value?.posts.orEmpty()
-            _data.postValue(
-                _data.value?.copy(posts = _data.value?.posts.orEmpty()
-                    .filter { it.id != id }
-                )
+        val old = _data.value?.posts.orEmpty()
+        _data.postValue(
+            _data.value?.copy(posts = _data.value?.posts.orEmpty()
+                .filter { it.id != id }
             )
-            try {
-                repository.removeById(id)
-            } catch (e: IOException) {
+        )
+        repository.removeById(id,object : PostRepository.Callback<Unit>{
+            override fun onSuccess(value: Unit){
+
+            }
+            override fun onError(e: Exception) {
                 _data.postValue(_data.value?.copy(posts = old))
             }
-        }
+        })
     }
 }
