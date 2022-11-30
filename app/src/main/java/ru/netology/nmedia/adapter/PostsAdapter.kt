@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 
 interface OnInteractionListener {
     fun onLike(post: Post) {}
@@ -40,6 +42,15 @@ class PostViewHolder(
         binding.apply {
             author.text = post.author
             published.text = post.published
+            val nameFileAvatar=post.authorAvatar
+            val urlImageAvatar = "http://192.168.102.171:9999/avatars/${nameFileAvatar}"
+                Glide.with(binding.avatar)
+                    .load(urlImageAvatar)
+                    .placeholder(R.drawable.ic_loading_100dp)
+                    .error(R.drawable.ic_error_100dp)
+                    .timeout(10_000)
+                    .circleCrop()
+                    .into(avatar)
             content.text = post.content
             // в адаптере
             like.isChecked = post.likedByMe
