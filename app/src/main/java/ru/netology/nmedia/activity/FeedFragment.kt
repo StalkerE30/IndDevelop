@@ -33,10 +33,10 @@ class FeedFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                if (post.likedByMe) {
-                    viewModel.likeById(post.id,true)
-                } else {
+                if (post.likedByMe) { //лесли уже айкнут мной, значит нужно сделать анлайк
                     viewModel.likeById(post.id,false)
+                } else {
+                    viewModel.likeById(post.id,true)
                 }
             }
 
