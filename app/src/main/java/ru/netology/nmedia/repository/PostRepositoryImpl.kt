@@ -17,16 +17,12 @@ class PostRepositoryImpl: PostRepository {
                     if (!response.isSuccessful) {
                         callback.onError(RuntimeException(response.message()))
                         return
-                    } else if (response.code()<200 || response.code()>299 ) {
-                        val resp = response.code()
-                        callback.onError(RuntimeException("Сервер вернул ошибку $resp"))
-                        return
                     } else
-                    callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
+                        callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
                 }
 
                 override fun onFailure(call: Call<List<Post>>, t: Throwable) {
-                    TODO("Not yet implemented")
+                    callback.onError(RuntimeException(t))
                 }
             })
     }
@@ -39,17 +35,12 @@ class PostRepositoryImpl: PostRepository {
                         if (!response.isSuccessful) {
                             callback.onError(RuntimeException(response.message()))
                             return
-                        } else if (response.code()<200 || response.code()>299 ) {
-                            val resp = response.code()
-                            callback.onError(RuntimeException("Сервер вернул ошибку $resp"))
-                            return
                         } else
-
-                        callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
+                            callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
                     }
 
                     override fun onFailure(call: Call<Post>, t: Throwable) {
-                        TODO("Not yet implemented")
+                        callback.onError(RuntimeException(t))
                     }
                 })
         } else {
@@ -59,16 +50,11 @@ class PostRepositoryImpl: PostRepository {
                         if (!response.isSuccessful) {
                             callback.onError(RuntimeException(response.message()))
                             return
-                        } else if (response.code()<200 || response.code()>299 ) {
-                            val resp = response.code()
-                            callback.onError(RuntimeException("Сервер вернул ошибку $resp"))
-                            return
                         } else
-
-                        callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
+                            callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
                     }
                     override fun onFailure(call: Call<Post>, t: Throwable) {
-                        TODO("Not yet implemented")
+                        callback.onError(RuntimeException(t))
                     }
                 })
         }
@@ -81,16 +67,12 @@ class PostRepositoryImpl: PostRepository {
                     if (!response.isSuccessful) {
                         callback.onError(RuntimeException(response.message()))
                         return
-                    } else if (response.code()<200 || response.code()>299 ) {
-                        val resp = response.code()
-                        callback.onError(RuntimeException("Сервер вернул ошибку $resp"))
-                        return
                     } else
                     callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
                 }
 
                 override fun onFailure(call: Call<Post>, t: Throwable) {
-                    TODO("Not yet implemented")
+                    callback.onError(RuntimeException(t))
                 }
 
             })
@@ -103,15 +85,11 @@ class PostRepositoryImpl: PostRepository {
                     if (!response.isSuccessful) {
                         callback.onError(RuntimeException(response.message()))
                         return
-                    } else if (response.code()<200 || response.code()>299 ) {
-                        val resp = response.code()
-                        callback.onError(RuntimeException("Сервер вернул ошибку $resp"))
-                        return
                     } else
-                    callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
+                        callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
                 }
                 override fun onFailure(call: Call<Unit>, t: Throwable) {
-                    TODO("Not yet implemented")
+                    callback.onError(RuntimeException(t))
                 }
 
             })
