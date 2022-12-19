@@ -35,7 +35,7 @@ class FeedFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                if (post.likedByMe) { //лесли уже айкнут мной, значит нужно сделать анлайк
+                if (post.likedByMe) { //если уже айкнут мной, значит нужно сделать анлайк
                     viewModel.likeById(post.id,false)
                 } else {
                     viewModel.likeById(post.id,true)
@@ -77,9 +77,9 @@ class FeedFragment : Fragment() {
 
         }
 
-        binding.retryButton.setOnClickListener {
-            viewModel.loadPosts()
-        }
+        //binding.retryButton.setOnClickListener {
+        //    viewModel.loadPosts()
+        //}
 
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
