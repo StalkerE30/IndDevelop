@@ -71,19 +71,22 @@ class FeedFragment : Fragment() {
 
         viewModel.newerCount.observe(viewLifecycleOwner){
             //println("Newer count $it")
-            binding.newerPosts.isVisible = true
+            if (it>0) {
+                binding.newerPosts.isVisible = true
+            }
         }
+
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                if (positionStart == 0) {
+                    binding.list.smoothScrollToPosition(0)
+                }
+            }
+        })
 
          binding.newerPosts.setOnClickListener {
             viewModel.update()
-             adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-                 override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                     if (positionStart == 0) {
-                         binding.list.smoothScrollToPosition(0)
-                     }
-                 }
-             })
-            binding.newerPosts.isGone = true
+             binding.newerPosts.isGone = true
         }
 
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
