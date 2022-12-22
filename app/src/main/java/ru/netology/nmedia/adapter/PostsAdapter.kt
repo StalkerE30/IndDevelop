@@ -1,5 +1,6 @@
 package ru.netology.nmedia.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.PopupMenu
@@ -11,6 +12,7 @@ import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import ru.netology.nmedia.BuildConfig
 
 interface OnInteractionListener {
     fun onLike(post: Post) {}
@@ -38,12 +40,14 @@ class PostViewHolder(
     private val onInteractionListener: OnInteractionListener,
 ) : RecyclerView.ViewHolder(binding.root) {
 
+    @SuppressLint("SuspiciousIndentation")
     fun bind(post: Post) {
         binding.apply {
             author.text = post.author
             published.text = post.published
             val nameFileAvatar=post.authorAvatar
-            val urlImageAvatar = "http://192.168.102.171:9999/avatars/${nameFileAvatar}"
+            //val urlImageAvatar = "http://192.168.102.171:9999/avatars/${nameFileAvatar}"
+            val urlImageAvatar = "${BuildConfig.BASE_URL}/avatars/${nameFileAvatar}"
                 Glide.with(binding.avatar)
                     .load(urlImageAvatar)
                     .placeholder(R.drawable.ic_loading_100dp)

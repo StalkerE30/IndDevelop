@@ -1,54 +1,43 @@
 package ru.netology.nmedia.repository
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
-import okio.IOException
-import ru.netology.nmedia.api.PostsApi
+import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
+import ru.netology.nmedia.api.*
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
+import ru.netology.nmedia.entity.toEntity
 import ru.netology.nmedia.error.ApiError
+import ru.netology.nmedia.error.AppError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
-import kotlin.RuntimeException
+import java.io.IOException
 
 
 class PostRepositoryImpl(private val postDao: PostDao): PostRepository {
 
+    override val data = postDao.getAll().map { it.map(PostEntity::toDto) }
+        .flowOn(Dispatchers.Default)
 
-    //    override fun likeById(id: Long, likeUnLike:Boolean,callback: PostRepository.Callback<Post>) {
-//        if (likeUnLike) {
-//            PostsApi.retrofitService.likeById(id)
-//                .enqueue(object : Callback<Post>{
-//                    override fun onResponse(call: Call<Post>, response: Response<Post>) {
-//                        if (!response.isSuccessful) {
-//                            callback.onError(RuntimeException(response.message()))
-//                            return
-//                        } else
-//                            callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
-//                    }
-//
-//                    override fun onFailure(call: Call<Post>, t: Throwable) {
-//                        callback.onError(RuntimeException(t))
-//                    }
-//                })
-//        } else {
-//            PostsApi.retrofitService.unlikeById(id)
-//                .enqueue(object : Callback<Post>{
-//                    override fun onResponse(call: Call<Post>, response: Response<Post>) {
-//                        if (!response.isSuccessful) {
-//                            callback.onError(RuntimeException(response.message()))
-//                            return
-//                        } else
-//                            callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
-//                    }
-//                    override fun onFailure(call: Call<Post>, t: Throwable) {
-//                        callback.onError(RuntimeException(t))
-//                    }
-//                })
-//        }
-//    }
-    override val data: LiveData<List<Post>> = postDao.getAll().map { it.map(PostEntity::toDto) }
+    override fun getNewerCount(newerPostId: Long): Flow<Int> = flow {
+        while (true) {
+            try {
+                delay(10_000)
+                val response = PostsApi.retrofitService.getNewer(newerPostId)
+                val body = response.body() ?: continue
+                postDao.insert(body.toEntity(false))
+                emit(body.size)
+            } catch (e: Exception) {
+                //ignore
+            }
+        }
+    }
+
+    override suspend fun update() {
+        postDao.update()
+    }
 
     override suspend fun getAll() {
         try {
@@ -73,13 +62,17 @@ class PostRepositoryImpl(private val postDao: PostDao): PostRepository {
                 if (!response.isSuccessful) {
                     throw RuntimeException(response.message())
                 }
+                val post = response.body() ?: throw ApiError(response.code(), response.message())
+                postDao.insert(PostEntity.fromDto(post))
             } else {
                 val response =PostsApi.retrofitService.unlikeById(id)
                 if (!response.isSuccessful) {
                     throw RuntimeException(response.message())
                 }
+                val post = response.body() ?: throw ApiError(response.code(), response.message())
+                postDao.insert(PostEntity.fromDto(post))
             }
-            postDao.likeById(id)
+            //postDao.likeById(id)
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {

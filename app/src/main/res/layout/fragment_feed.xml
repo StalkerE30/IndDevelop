@@ -38,6 +38,17 @@
 <!--            android:layout_height="wrap_content"-->
 <!--            app:constraint_referenced_ids="retryTitle,retryButton" />-->
 
+        <Button
+            android:id="@+id/newerPosts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Свежие записи"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
         <TextView
             android:id="@+id/emptyText"
             android:layout_width="wrap_content"
@@ -75,8 +86,10 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
+            app:fastScrollEnabled="true"
             tools:layout_editor_absoluteX="0dp"
             tools:listitem="@layout/card_post" />
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
