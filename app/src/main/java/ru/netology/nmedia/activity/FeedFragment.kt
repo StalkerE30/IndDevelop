@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
@@ -75,10 +76,13 @@ class FeedFragment : Fragment() {
 
          binding.newerPosts.setOnClickListener {
             viewModel.update()
-            binding.list.post{
-                binding.list.scrollToPosition(0)
-            }
-
+             adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+                 override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                     if (positionStart == 0) {
+                         binding.list.smoothScrollToPosition(0)
+                     }
+                 }
+             })
             binding.newerPosts.isGone = true
         }
 
