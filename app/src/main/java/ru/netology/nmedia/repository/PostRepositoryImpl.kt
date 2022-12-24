@@ -24,16 +24,19 @@ class PostRepositoryImpl(private val postDao: PostDao): PostRepository {
     override fun getNewerCount(newerPostId: Long): Flow<Int> = flow {
         while (true) {
             //try {
-                delay(10_000)
-                val response = PostsApi.retrofitService.getNewer(newerPostId)
-                val body = response.body() ?: continue
-                postDao.insert(body.toEntity(false))
-                emit(body.size)
-            //} catch (e: Exception) {
-                //ignore
+            delay(10_000)
+            val response = PostsApi.retrofitService.getNewer(newerPostId)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
             }
-        }.catch { println("Caught $it") }
-    //}
+            val body = response.body() ?: continue
+            postDao.insert(body.toEntity(false))
+            emit(body.size)
+        }
+    }
+        .catch {e -> throw AppError.from(e)} //{ println("Caught $it") }
+        .flowOn(Dispatchers.Default)
+
 
     override suspend fun update() {
         postDao.update()
