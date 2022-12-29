@@ -62,6 +62,7 @@ class FeedFragment : Fragment() {
                     Intent.createChooser(intent, getString(R.string.chooser_share_post))
                 startActivity(shareIntent)
             }
+
         })
         binding.list.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner) { state ->
@@ -75,6 +76,7 @@ class FeedFragment : Fragment() {
                 binding.newerPosts.isVisible = true
             }
         }
+
 
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
@@ -113,6 +115,7 @@ class FeedFragment : Fragment() {
         binding.refresh.setOnRefreshListener{
             viewModel.refreshPosts()
         }
+
         return binding.root
     }
 }

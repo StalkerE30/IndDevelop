@@ -1,9 +1,13 @@
 package ru.netology.nmedia.adapter
 
+import android.view.View
+import androidx.core.net.toUri
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +15,6 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import ru.netology.nmedia.BuildConfig
 
 interface OnInteractionListener {
@@ -59,6 +62,23 @@ class PostViewHolder(
             // в адаптере
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
+
+            if (post.attachment?.uri == null) {
+                binding.photoContainer.isGone = true
+            }   else {
+                binding.photoContainer.isVisible = true
+                val urlImagePost = "${BuildConfig.BASE_URL}/media/${post.attachment.uri}"
+                Glide.with(binding.photo)
+                    .load(urlImagePost)
+                    .placeholder(R.drawable.ic_loading_100dp)
+                    .timeout(10_000)
+                    .circleCrop()
+                    .into(photo)
+            }
+
+            photo.setOnClickListener{
+
+            }
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
