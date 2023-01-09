@@ -22,6 +22,7 @@ interface OnInteractionListener {
     fun onEdit(post: Post) {}
     fun onRemove(post: Post) {}
     fun onShare(post: Post) {}
+    fun onClickPhoto(url: String) {}
 }
 
 class PostsAdapter(
@@ -77,7 +78,10 @@ class PostViewHolder(
             }
 
             photo.setOnClickListener{
-
+                if (post.attachment?.uri != null) {
+                    val urlImagePost = "${BuildConfig.BASE_URL}/media/${post.attachment.uri}"
+                    onInteractionListener.onClickPhoto(urlImagePost)
+                }
             }
 
             menu.setOnClickListener {

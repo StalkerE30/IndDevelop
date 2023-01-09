@@ -15,9 +15,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
+import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
+import ru.netology.nmedia.databinding.FragmentPhotoBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.viewmodel.PostViewModel
@@ -63,6 +65,15 @@ class FeedFragment : Fragment() {
                 startActivity(shareIntent)
             }
 
+            override fun onClickPhoto(url: String) {
+                findNavController().navigate(
+                    R.id.action_feedFragment_to_fragment_photo,
+                    Bundle().apply {
+                        textArg = url
+                    }
+                )
+            }
+
         })
         binding.list.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner) { state ->
@@ -76,7 +87,6 @@ class FeedFragment : Fragment() {
                 binding.newerPosts.isVisible = true
             }
         }
-
 
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
@@ -104,9 +114,6 @@ class FeedFragment : Fragment() {
 
         }
 
-        //binding.retryButton.setOnClickListener {
-        //    viewModel.loadPosts()
-        //}
 
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
