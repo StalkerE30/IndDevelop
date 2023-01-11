@@ -64,22 +64,21 @@ class PostViewHolder(
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
 
-            if (post.attachment?.uri == null) {
+            if (post.attachment?.url == null) {
                 binding.photoContainer.isGone = true
             }   else {
                 binding.photoContainer.isVisible = true
-                val urlImagePost = "${BuildConfig.BASE_URL}/media/${post.attachment.uri}"
+                val urlImagePost = "${BuildConfig.BASE_URL}/media/${post.attachment.url}"
                 Glide.with(binding.photo)
                     .load(urlImagePost)
                     .placeholder(R.drawable.ic_loading_100dp)
                     .timeout(10_000)
-                    .circleCrop()
                     .into(photo)
             }
 
             photo.setOnClickListener{
-                if (post.attachment?.uri != null) {
-                    val urlImagePost = "${BuildConfig.BASE_URL}/media/${post.attachment.uri}"
+                if (post.attachment?.url != null) {
+                    val urlImagePost = "${BuildConfig.BASE_URL}/media/${post.attachment.url}"
                     onInteractionListener.onClickPhoto(urlImagePost)
                 }
             }

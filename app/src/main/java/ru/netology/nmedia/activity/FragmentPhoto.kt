@@ -33,10 +33,9 @@ class FragmentPhoto : Fragment() {
         )
         binding.apply {
             Glide.with(binding.photo)
-                .load(arguments?.textArg?.toUri())
+                .load(arguments?.textArg)
                 .placeholder(R.drawable.ic_loading_100dp)
                 .timeout(10_000)
-                .circleCrop()
                 .into(photo)
         }
 
